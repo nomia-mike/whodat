@@ -1,2 +1,0 @@
-# whodat
-Dog Identifier
