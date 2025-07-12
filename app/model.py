@@ -1,7 +1,13 @@
-import numpy as np
+"""
+main
+by mike
+"""
+# Standard libraries
 import pickle
-from openai import OpenAI
 from typing import List, Tuple
+# 3rd party libraries
+import numpy as np
+from openai import OpenAI
 from scipy.spatial.distance import cosine
 
 client = OpenAI()  # Relies on OPENAI_API_KEY in environment
@@ -24,10 +30,7 @@ def load_known_dogs() -> List[Tuple[str, np.ndarray]]:
         return []
 
 
-def find_closest_match(
-    query: np.ndarray,
-    known: List[Tuple[str, np.ndarray]],
-) -> Tuple[str, float]:
+def find_closest_match(query: np.ndarray,known: List[Tuple[str, np.ndarray]],) -> Tuple[str, float]:
     """Find the closest matching known dog by cosine distance."""
     best_match = None
     min_distance = float("inf")
