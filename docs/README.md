@@ -30,4 +30,41 @@ This project uses [`uv`](https://github.com/astral-sh/uv) for Python package and
 ### 1. Install `uv`
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
+### 2. Create and activate the virtual environment
+```bash
+uv venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+```bash
+uv pip install -e .[dev]
+```
+
+### 4. Set your OpenAI API key
+```bash
+export OPENAI_API_KEY=sk-...
+```
+
+### 5. Run the app
+```bash
+./run.sh
+```
+
+## 🧪 API Endpoints
+
+### `POST /identify`
+
+Identify a dog from an uploaded image.
+
+**Form fields**:
+- `file`: image file (JPG/PNG)
+
+**Response**:
+```json
+{
+  "dog_name": "Fido",
+  "distance": 0.08
+}
