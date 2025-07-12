@@ -68,13 +68,14 @@ Identify a dog from an uploaded image.
   "dog_name": "Fido",
   "distance": 0.08
 }
+```
 
 `POST /add_dog`
 
 Adds a new dog to the database.
 **Form fields:**
  - `name`: name of the dog
-- `file`: image file (JPG/PNG)
+ - `file`: image file (JPG/PNG)
 
 **Response**:
 ```json
@@ -82,6 +83,7 @@ Adds a new dog to the database.
   "status": "success",
   "added": "Fido"
 }
+```
 
 🧪 Examples Usage with curl
 ```bash
