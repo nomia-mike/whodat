@@ -11,7 +11,6 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
-import numpy as np
 
 from app.model import (
     extract_embedding,
@@ -41,7 +40,7 @@ async def identify_dog(file: UploadFile = File(...)):
         query_embedding = extract_embedding(image_bytes)
         match_name, distance = find_closest_match(query_embedding, known_dogs)
         return {"dog_name": match_name, "distance": distance}
-    except Exception as exc:
+    except Exception as exc: # pylint: disable=broad-exception-caught
         return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
@@ -59,5 +58,5 @@ async def add_dog(name: str, file: UploadFile = File(...)):
             pickle.dump(dog_list, file_out)
 
         return {"status": "success", "added": name}
-    except Exception as exc:
+    except Exception as exc: # pylint: disable=broad-exception-caught
         return JSONResponse(status_code=500, content={"error": str(exc)})

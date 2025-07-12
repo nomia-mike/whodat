@@ -17,6 +17,7 @@ DATA_PATH = "data/known_dogs.pkl"
 
 def extract_embedding(image_bytes: bytes) -> np.ndarray:
     """Send image to OpenAI and get back an image embedding."""
+    # pylint: disable=no-member
     response = client.images.embed(image=image_bytes)
     return np.array(response.data[0].embedding, dtype=np.float32)
 
@@ -42,4 +43,3 @@ def find_closest_match(query: np.ndarray,known: List[Tuple[str, np.ndarray]],) -
             best_match = name
 
     return best_match, float(min_distance)
-
