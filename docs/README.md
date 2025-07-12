@@ -68,3 +68,27 @@ Identify a dog from an uploaded image.
   "dog_name": "Fido",
   "distance": 0.08
 }
+
+`POST /add_dog`
+
+Adds a new dog to the database.
+**Form fields:**
+ - `name`: name of the dog
+- `file`: image file (JPG/PNG)
+
+**Response**:
+```json
+{
+  "status": "success",
+  "added": "Fido"
+}
+
+🧪 Examples Usage with curl
+```bash
+curl -X POST http://localhost:8000/add_dog \
+  -F "name=Fido" \
+  -F "file=@fido.jpg"
+
+curl -X POST http://localhost:8000/identify \
+  -F "file=@mysterydog.jpg"
+```
