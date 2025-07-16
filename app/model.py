@@ -1,26 +1,30 @@
 """
-main
+model
 by mike
 """
-# Standard libraries
+import io
 import pickle
 from typing import List, Tuple
-# 3rd party libraries
-import numpy as np
-from openai import OpenAI
-from scipy.spatial.distance import cosine
 
-client = OpenAI()  # Relies on OPENAI_API_KEY in environment
+import numpy as np
+from PIL import Image
+from scipy.spatial.distance import cosine
+from transformers import CLIPProcessor, CLIPModel
+import torch
+
+# Load the CLIP model and processor once
+clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 DATA_PATH = "data/known_dogs.pkl"
 
-
 def extract_embedding(image_bytes: bytes) -> np.ndarray:
-    """Send image to OpenAI and get back an image embedding."""
-    # pylint: disable=no-member
-    response = client.images.embed(image=image_bytes)
-    return np.array(response.data[0].embedding, dtype=np.float32)
-
+    """Convert image bytes to an embedding using CLIP."""
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    inputs = clip_processor(images=image, return_tensors="pt")
+    with torch.no_grad():
+        outputs = clip_model.get_image_features(**inputs)
+    return outputs[0].numpy()
 
 def load_known_dogs() -> List[Tuple[str, np.ndarray]]:
     """Load the known dog embeddings from disk."""
@@ -30,8 +34,7 @@ def load_known_dogs() -> List[Tuple[str, np.ndarray]]:
     except FileNotFoundError:
         return []
 
-
-def find_closest_match(query: np.ndarray,known: List[Tuple[str, np.ndarray]],) -> Tuple[str, float]:
+def find_closest_match(query: np.ndarray, known: List[Tuple[str, np.ndarray]]) -> Tuple[str, float]:
     """Find the closest matching known dog by cosine distance."""
     best_match = None
     min_distance = float("inf")
