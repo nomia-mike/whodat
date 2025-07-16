@@ -25,7 +25,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+	allow_headers=["*"],
 )
 
 known_dogs = load_known_dogs()
@@ -33,30 +33,30 @@ known_dogs = load_known_dogs()
 
 @app.post("/identify")
 async def identify_dog(file: UploadFile = File(...)):
-    """Identify the dog in the uploaded image."""
-    try:
-        image_bytes = await file.read()
-        _ = Image.open(io.BytesIO(image_bytes)).convert("RGB")  # For validation
-        query_embedding = extract_embedding(image_bytes)
-        match_name, distance = find_closest_match(query_embedding, known_dogs)
-        return {"dog_name": match_name, "distance": distance}
-    except Exception as exc: # pylint: disable=broad-exception-caught
-        return JSONResponse(status_code=500, content={"error": str(exc)})
+	"""Identify the dog in the uploaded image."""
+	try:
+		image_bytes = await file.read()
+		_ = Image.open(io.BytesIO(image_bytes)).convert("RGB")  # For validation
+		query_embedding = extract_embedding(image_bytes)
+		match_name, distance = find_closest_match(query_embedding, known_dogs)
+		return {"dog_name": match_name, "distance": distance}
+	except Exception as exc:  # pylint: disable=broad-exception-caught
+		return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
 @app.post("/add_dog")
-async def add_dog(name: str, file: UploadFile = File(...)):
-    """Add a new dog to the known database."""
-    try:
-        image_bytes = await file.read()
-        embedding = extract_embedding(image_bytes)
+async def add_dog(name: str = Form(...), file: UploadFile = File(...)):
+	"""Add a new dog to the known database."""
+	try:
+		image_bytes = await file.read()
+		embedding = extract_embedding(image_bytes)
 
-        dog_list = load_known_dogs()
-        dog_list.append((name, embedding))
+		dog_list = load_known_dogs()
+		dog_list.append((name, embedding))
 
-        with open("data/known_dogs.pkl", "wb") as file_out:
-            pickle.dump(dog_list, file_out)
+		with open("data/known_dogs.pkl", "wb") as file_out:
+			pickle.dump(dog_list, file_out)
 
-        return {"status": "success", "added": name}
-    except Exception as exc: # pylint: disable=broad-exception-caught
-        return JSONResponse(status_code=500, content={"error": str(exc)})
+		return {"status": "success", "added": name}
+	except Exception as exc:  # pylint: disable=broad-exception-caught
+		return JSONResponse(status_code=500, content={"error": str(exc)})
