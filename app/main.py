@@ -7,24 +7,24 @@ import pickle
 import io
 
 # 3rd party libraries
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
 
 from app.model import (
-    extract_embedding,
-    find_closest_match,
-    load_known_dogs,
+	extract_embedding,
+	find_closest_match,
+	load_known_dogs,
 )
 
 app = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+	CORSMiddleware,
+	allow_origins=["*"],
+	allow_credentials=True,
+	allow_methods=["*"],
 	allow_headers=["*"],
 )
 
