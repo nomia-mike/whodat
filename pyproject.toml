@@ -4,13 +4,14 @@ version = "0.1.0"
 description = "A prototype web app to identify dogs by comparing images to known embeddings."
 authors = [{ name = "Mike Charles", email = "serverlessmike@gmail.com" }]
 dependencies = [
-    "fastapi",
-    "uvicorn[standard]",
-    "openai",
-    "pillow",
-    "numpy",
-    "scipy",
-    "python-multipart"
+  "fastapi",
+  "uvicorn[standard]",
+  "pillow",
+  "numpy",
+  "scipy",
+  "transformers",
+  "torch",
+  "python-multipart"
 ]
 requires-python = ">=3.9"
 
