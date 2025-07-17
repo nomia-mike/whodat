@@ -19,30 +19,30 @@ clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 DATA_PATH = "data/known_dogs.pkl"
 
 def extract_embedding(image_bytes: bytes) -> np.ndarray:
-    """Convert image bytes to an embedding using CLIP."""
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    inputs = clip_processor(images=image, return_tensors="pt")
-    with torch.no_grad():
-        outputs = clip_model.get_image_features(**inputs)
-    return outputs[0].numpy()
+	"""Convert image bytes to an embedding using CLIP."""
+	image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+	inputs = clip_processor(images=image, return_tensors="pt")
+	with torch.no_grad():
+		outputs = clip_model.get_image_features(**inputs)
+	return outputs[0].numpy()
 
 def load_known_dogs() -> List[Tuple[str, np.ndarray]]:
-    """Load the known dog embeddings from disk."""
-    try:
-        with open(DATA_PATH, "rb") as file:
-            return pickle.load(file)
-    except FileNotFoundError:
-        return []
+	"""Load the known dog embeddings from disk."""
+	try:
+		with open(DATA_PATH, "rb") as file:
+			return pickle.load(file)
+	except FileNotFoundError:
+		return []
 
 def find_closest_match(query: np.ndarray, known: List[Tuple[str, np.ndarray]]) -> Tuple[str, float]:
-    """Find the closest matching known dog by cosine distance."""
-    best_match = None
-    min_distance = float("inf")
+	"""Find the closest matching known dog by cosine distance."""
+	best_match = None
+	min_distance = float("inf")
 
-    for name, embedding in known:
-        distance = cosine(query, embedding)
-        if distance < min_distance:
-            min_distance = distance
-            best_match = name
+	for name, embedding in known:
+		distance = cosine(query, embedding)
+		if distance < min_distance:
+			min_distance = distance
+			best_match = name
 
-    return best_match, float(min_distance)
+	return best_match, float(min_distance)

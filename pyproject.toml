@@ -24,7 +24,8 @@ dev = [
 
 [tool.pylint]
 max-line-length = 100
-disable = ["missing-module-docstring"]
+indent-string = "\t"
+indent-after-paren = 1
 
 [tool.black]
 line-length = 100
