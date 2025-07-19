@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+	print "identify \"filename.jpeg\" "
+	exit 1
+fi
+
+FILE=$1
+
+if [ ! -f "$FILE" ]
+then
+	echo "❌ File not found: $FILE"
+	exit 1
+fi
+
+curl -X POST http://localhost:8000/identify -F "file=@$FILE"
