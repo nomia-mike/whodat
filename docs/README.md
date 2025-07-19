@@ -19,6 +19,7 @@ Dog Identifier is a Python web app that identifies a dog by comparing a user-upl
 | `.github/workflows`| CI pipeline (lint/test)           |
 | `app/`             | Main project scripts (FastAPI app)|
 | `bin/`             | Project executables               |
+| `data/`            | Database                          |
 | `docs/`            | Project documentation             |
 
 ---
