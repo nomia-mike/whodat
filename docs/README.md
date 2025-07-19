@@ -38,9 +38,11 @@ uv venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install dependencie
+Includes fix for nasty bug in torch :(s
 ```bash
 uv pip install -e '.[dev]'
+uv pip install --index-url https://download.pytorch.org/whl/cpu torch==2.2.2
 ```
 
 ### 4. Set your OpenAI API key
