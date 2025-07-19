@@ -2,7 +2,7 @@
 
 if [ $# -ne 1 ]
 then
-	print "identify \"filename.jpeg\" "
+	echo "identify \"filename.jpeg\" "
 	exit 1
 fi
 
