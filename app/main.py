@@ -12,11 +12,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
 
+# Local libraries
 from app.model import (
 	extract_embedding,
 	find_closest_match,
 	load_known_dogs,
 )
+from app.settings import SIMILARITY_THRESHOLD
 
 app = FastAPI()
 
@@ -39,12 +41,12 @@ async def identify_dog(file: UploadFile = File(...)):
 		_ = Image.open(io.BytesIO(image_bytes)).convert("RGB")  # For validation
 		query_embedding = extract_embedding(image_bytes)
 		match_name, distance = find_closest_match(query_embedding, known_dogs)
-		if match_name is None:
+		print(f"closest match is {match_name}, at distance {distance}")
+		if match_name is None or distance > SIMILARITY_THRESHOLD:
 			return JSONResponse(status_code=404, content={"error": "No match found"})
 		return {"dog_name": match_name, "distance": distance}
 	except Exception as exc:  # pylint: disable=broad-exception-caught
 		return JSONResponse(status_code=500, content={"error": str(exc)})
-
 
 @app.post("/add_dog")
 async def add_dog(name: str = Form(...), file: UploadFile = File(...)):
