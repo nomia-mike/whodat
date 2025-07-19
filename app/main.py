@@ -39,6 +39,8 @@ async def identify_dog(file: UploadFile = File(...)):
 		_ = Image.open(io.BytesIO(image_bytes)).convert("RGB")  # For validation
 		query_embedding = extract_embedding(image_bytes)
 		match_name, distance = find_closest_match(query_embedding, known_dogs)
+		if match_name is None:
+			return JSONResponse(status_code=404, content={"error": "No match found"})
 		return {"dog_name": match_name, "distance": distance}
 	except Exception as exc:  # pylint: disable=broad-exception-caught
 		return JSONResponse(status_code=500, content={"error": str(exc)})

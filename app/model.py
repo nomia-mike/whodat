@@ -51,5 +51,7 @@ def find_closest_match(query: np.ndarray, known: List[Tuple[str, np.ndarray]]) -
 		if distance < min_distance:
 			min_distance = distance
 			best_match = name
+	if best_match is None:
+		return None, None
 
 	return best_match, float(min_distance)
