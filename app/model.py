@@ -13,7 +13,14 @@ from transformers import CLIPProcessor, CLIPModel
 import torch
 
 # Load the CLIP model and processor once
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+clip_model = CLIPModel.from_pretrained(
+	"openai/clip-vit-base-patch32",
+	subfolder="",
+	local_files_only=False,
+	trust_remote_code=False,
+	token=None,
+	use_safetensors=True  # <-- Force safetensors only
+)
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 DATA_PATH = "data/known_dogs.pkl"

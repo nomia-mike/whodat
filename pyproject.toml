@@ -11,6 +11,7 @@ dependencies = [
   "scipy",
   "transformers",
   "torch",
+  "safetensors",
   "python-multipart"
 ]
 requires-python = ">=3.9"
