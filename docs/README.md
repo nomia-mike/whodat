@@ -1,6 +1,7 @@
 ## 🐶 Dog Identifier
 
 ![Python](https://img.shields.io/badge/python-3670A0?logo=python&logoColor=ffdd54&style=for-the-badge)
+ 
 ![Code Style](https://img.shields.io/badge/code%20style-pep8-orange)
 [![Linting and Unit Tests](https://github.com/nomia-mike/whodat/actions/workflows/ci.yml/badge.svg)](https://github.com/nomia-mike/whodat/actions/workflows/ci.yml)
 
@@ -39,7 +40,7 @@ uv venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencie
+### 3. Install dependencies
 ```bash
 uv pip install -e '.[dev]'
 ```
