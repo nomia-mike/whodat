@@ -5,11 +5,13 @@ by mike
 # Standard libraries
 import pickle
 import io
+import os
 
 # 3rd party libraries
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 # Local libraries
@@ -20,7 +22,7 @@ from app.model import (
 )
 from app.settings import SIMILARITY_THRESHOLD
 
-app = FastAPI()
+app = FastAPI(title="Dog Identifier API", description="Identify dogs using image embeddings")
 
 app.add_middleware(
 	CORSMiddleware,
@@ -29,6 +31,10 @@ app.add_middleware(
 	allow_methods=["*"],
 	allow_headers=["*"],
 )
+
+# Serve frontend if available
+if os.path.exists("frontend"):
+	app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 known_dogs = load_known_dogs()
 
@@ -57,9 +63,20 @@ async def add_dog(name: str = Form(...), file: UploadFile = File(...)):
 		dog_list = load_known_dogs()
 		dog_list.append((name, embedding))
 
+		# Ensure data directory exists
+		os.makedirs("data", exist_ok=True)
 		with open("data/known_dogs.pkl", "wb") as file_out:
 			pickle.dump(dog_list, file_out)
+
+		# Reload the global known_dogs list
+		global known_dogs
+		known_dogs = dog_list
 
 		return {"status": "success", "added": name}
 	except Exception as exc:  # pylint: disable=broad-exception-caught
 		return JSONResponse(status_code=500, content={"error": str(exc)})
+
+@app.get("/health")
+async def health_check():
+	"""Health check endpoint for cloud deployments."""
+	return {"status": "healthy", "dogs_count": len(known_dogs)}
