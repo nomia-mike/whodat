@@ -1,0 +1,10 @@
+# Generated from pyproject.toml for cloud platforms that need requirements.txt
+fastapi
+uvicorn[standard]
+pillow
+numpy<2
+scipy
+transformers
+torch
+safetensors
+python-multipart

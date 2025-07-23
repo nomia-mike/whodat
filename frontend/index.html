@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐶 Dog Identifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #4a5568;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .add-btn {
+            background: #48bb78;
+        }
+
+        .add-btn:hover {
+            background: #38a169;
+        }
+
+        .preview-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .result {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result.success {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+        }
+
+        .result.error {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+        }
+
+        .dog-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .confidence {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4299e1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .add-dog-form {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .form-input:focus {
+            border-color: #4299e1;
+            outline: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐶 Dog Identifier</h1>
+            <p>Upload a photo to identify the dog!</p>
+        </div>
+
+        <div class="content">
+            <div class="upload-section">
+                <input type="file" id="dogImage" class="file-input" accept="image/*" capture="environment">
+                <label for="dogImage" class="upload-btn">📸 Take/Upload Photo</label>
+                
+                <button id="addDogBtn" class="upload-btn add-btn">➕ Add New Dog</button>
+            </div>
+
+            <div id="previewContainer" class="preview-container" style="display: none;">
+                <img id="preview" class="preview-image" alt="Preview">
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Identifying dog...</p>
+            </div>
+
+            <div id="result" class="result" style="display: none;"></div>
+
+            <div id="addDogForm" class="add-dog-form">
+                <h3>Add a New Dog</h3>
+                <input type="text" id="dogName" class="form-input" placeholder="Enter dog's name" required>
+                <input type="file" id="newDogImage" class="form-input" accept="image/*" capture="environment">
+                <button id="submitNewDog" class="upload-btn add-btn">Add Dog</button>
+                <button id="cancelAdd" class="upload-btn" style="background: #718096;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Update this with your deployed backend URL
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : 'https://your-backend-url.herokuapp.com'; // Update this!
+
+        const dogImageInput = document.getElementById('dogImage');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('previewContainer');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const addDogBtn = document.getElementById('addDogBtn');
+        const addDogForm = document.getElementById('addDogForm');
+        const cancelAdd = document.getElementById('cancelAdd');
+        const submitNewDog = document.getElementById('submitNewDog');
+
+        dogImageInput.addEventListener('change', handleImageUpload);
+        addDogBtn.addEventListener('click', () => {
+            addDogForm.style.display = addDogForm.style.display === 'none' ? 'block' : 'none';
+        });
+        cancelAdd.addEventListener('click', () => {
+            addDogForm.style.display = 'none';
+        });
+        submitNewDog.addEventListener('click', handleAddDog);
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Identify dog
+            identifyDog(file);
+        }
+
+        async function identifyDog(file) {
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/identify`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult(data);
+                } else {
+                    throw new Error(data.error || 'Failed to identify dog');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = `
+                    <div class="dog-name" style="color: #e53e3e;">Error</div>
+                    <p>${error.message}</p>
+                `;
+                result.className = 'result error';
+                result.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayResult(data) {
+            const confidence = ((1 - data.distance) * 100).toFixed(1);
+            const isUnknown = data.dog_name === 'Unknown';
+            
+            result.innerHTML = `
+                <div class="dog-name">${isUnknown ? '❓ Unknown Dog' : `🐕 ${data.dog_name}`}</div>
+                <div class="confidence">
+                    ${isUnknown ? 'No close match found' : `Confidence: ${confidence}%`}
+                </div>
+                ${isUnknown ? '<p style="margin-top: 10px; color: #718096;">Consider adding this dog to the database!</p>' : ''}
+            `;
+            result.className = `result ${isUnknown ? 'error' : 'success'}`;
+            result.style.display = 'block';
+        }
+
+        async function handleAddDog() {
+            const name = document.getElementById('dogName').value.trim();
+            const file = document.getElementById('newDogImage').files[0];
+
+            if (!name || !file) {
+                alert('Please enter a name and select an image');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/add_dog`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`Successfully added ${data.added} to the database!`);
+                    addDogForm.style.display = 'none';
+                    document.getElementById('dogName').value = '';
+                    document.getElementById('newDogImage').value = '';
+                } else {
+                    throw new Error(data.error || 'Failed to add dog');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(`Error adding dog: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
