@@ -14,4 +14,4 @@ then
 	exit 1
 fi
 
-curl -X POST http://localhost:8000/identify -F "file=@$FILE"
+curl -s -X POST http://localhost:8000/identify -F "file=@$FILE"
