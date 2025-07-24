@@ -69,7 +69,7 @@ async def add_dog(name: str = Form(...), file: UploadFile = File(...)):
 			pickle.dump(dog_list, file_out)
 
 		# Reload the global known_dogs list
-		global known_dogs
+		global known_dogs  # pylint: disable=global-statement
 		known_dogs = dog_list
 
 		return {"status": "success", "added": name}
