@@ -39,6 +39,13 @@ if os.path.exists("frontend"):
 known_dogs = load_known_dogs()
 
 
+@app.get("/dogs")
+def list_known_dogs():
+	"""List the names of all known dogs."""
+	names = sorted({name for name, _ in known_dogs})
+	return {"known_dogs": names}
+
+
 @app.post("/identify")
 async def identify_dog(file: UploadFile = File(...)):
 	"""Identify the dog in the uploaded image."""
